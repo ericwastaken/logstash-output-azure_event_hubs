@@ -15,12 +15,14 @@
 # limitations under the License.
 
 # This work contains copyrighted material, see NOTICE for
-# additional copyright aknowledgements.
+# additional copyright acknowledgements.
 
 require 'logstash-output-azure_event_hubs_jars'
 require 'logstash/outputs/base'
 require 'logstash/namespace'
 require 'logstash/errors'
+require 'zlib'
+require 'stringio'
 
 
 java_import com.microsoft.azure.eventhubs.ConnectionStringBuilder;
@@ -70,6 +72,10 @@ class LogStash::Outputs::AzureEventHubs < LogStash::Outputs::Base
   # Requires at minimum 2 threads
   # Defaults to 4
   config :client_threads, :validate => :number, :required => false, :default => 4
+
+  # Enable GZIP compression of messages
+  # Defaults to false
+  config :enable_gzip_compression, :validate => :boolean, :required => false, :default => false
 
   # Default serialize messages with JSON
   default :codec, 'json'
@@ -151,8 +157,18 @@ class LogStash::Outputs::AzureEventHubs < LogStash::Outputs::Base
   private
   def send_record(event, payload)
     begin
+
+      # Hold payload in a variable to modify if need
+      payload_mod = payload
+
+      # Compress payload if enabled
+      if @enable_gzip_compression
+        # Compress the payload using gzip
+        payload_mod = Zlib::Deflate.deflate(payload)
+      end
+
       # Create EventData object and convert payload to bytes
-      eh_event = EventData.create(ByteBuffer::wrap(payload.to_java_bytes))
+      eh_event = EventData.create(ByteBuffer::wrap(payload_mod.to_java_bytes))
       
       # Add property bag
       if (!@properties_bag.nil?)

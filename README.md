@@ -33,22 +33,24 @@ output {
         event_hub => "logs"
         sas_key_name => "myeventnamespace-write"
         sas_key => '...'
+        enable_gzip_compression => true
     }
 }
 ```
 
 ### Available Configuration Keys
 
-| Parameter Name | Description | Notes |
-| --- | --- | --- |
-| service_namespace | Azure Service Namespace or Endpoint. | Required. Exclude domain name.
-| service_domain | Use a national Azure Cloud. | Options: "servicebus.usgovcloudapi.net", "servicebus.cloudapi.de", "servicebus.chinacloudapi.cn" 
-| event_hub | Azure Event Hub (Entity) Path. | Required
-| sas_key_name | Azure Shared Access Signature (SAS) Key Name. | Required
-| sas_key | Azure Shared Access Signature (SAS) Key. | Required
-| connection_retry_count | Number of times to retry a failed Event Hubs connection. | Default: 3
+| Parameter Name | Description                                                                                                                                                                                                                                                                                                                                                                                                                                        | Notes |
+| --- |----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
+| service_namespace | Azure Service Namespace or Endpoint.                                                                                                                                                                                                                                                                                                                                                                                                               | Required. Exclude domain name.
+| service_domain | Use a national Azure Cloud.                                                                                                                                                                                                                                                                                                                                                                                                                        | Options: "servicebus.usgovcloudapi.net", "servicebus.cloudapi.de", "servicebus.chinacloudapi.cn" 
+| event_hub | Azure Event Hub (Entity) Path.                                                                                                                                                                                                                                                                                                                                                                                                                     | Required
+| sas_key_name | Azure Shared Access Signature (SAS) Key Name.                                                                                                                                                                                                                                                                                                                                                                                                      | Required
+| sas_key | Azure Shared Access Signature (SAS) Key.                                                                                                                                                                                                                                                                                                                                                                                                           | Required
+| connection_retry_count | Number of times to retry a failed Event Hubs connection.                                                                                                                                                                                                                                                                                                                                                                                           | Default: 3
 | properties_bag | Event metadata key=value pairs to set in the user-defined property bag. See [EventData](https://docs.microsoft.com/en-us/java/api/com.microsoft.azure.eventhubs.eventdata?view=azure-java-stable) class for more information. This config can be used to route events dynamically for [Azure Data Explorer]() by setting properties: <br>```"Table" => "%{[adx_table_name]}" "Format" => "json" "IngestionMappingReference" => "adx_ingest_map"``` | Format: ```properties_bag => { "key1" => "value1" "key2" => "%{[event_field]}" }```
-| client_threads | Total threads used by Azure Event Hubs client to handle events. This value is used when creating the Java Concurrency Executor pool size. | Default: 4
+| client_threads | Total threads used by Azure Event Hubs client to handle events. This value is used when creating the Java Concurrency Executor pool size.                                                                                                                                                                                                                                                                                                          | Default: 4
+| enable_gzip_compression | Enables gzip compression on the EventHub payloads.                                                                                                                                                                                                                                                                                                                                                                                                 | Default: false
 
 ## Development
 
